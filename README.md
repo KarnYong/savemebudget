@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SaveMe Budget
 
-## Getting Started
+จัดการเงินง่ายขึ้น เหลือเงินเก็บมากขึ้น — a Thai-first expense tracker.
 
-First, run the development server:
+Next.js 16 (App Router, Cache Components) · PostgreSQL via `pg` · `zod` validation · database-backed sessions (scrypt passwords, httpOnly cookie, only the token hash is stored).
+
+## Local development
+
+Requires Node 24 and PostgreSQL running locally.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local    # set DATABASE_URL
+npm install
+npm run db:migrate            # creates the database if missing, applies db/schema.sql (never drops)
+npm run dev                   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Checks
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run typecheck
+npm test                      # unit tests + DB integration test (uses DATABASE_URL)
+npm run build
+node scripts/smoke.mjs http://127.0.0.1:3000   # end-to-end through the real forms against a running server
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Layout
 
-## Learn More
+- `app/` — pages (`/`, `/login`, `/signup`, `/dashboard`) and Server Actions (`app/actions.ts`)
+- `lib/db.ts` — every query; expense queries are always scoped by the session's `user_id`
+- `lib/session.ts` — session cookie handling (`requireUser`)
+- `lib/validation.ts` — zod schemas and categories
+- `db/schema.sql` — idempotent schema
+- `proxy.ts` — optimistic redirect for `/dashboard` (the real check is server-side)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployment: see [DEPLOY.md](DEPLOY.md).

@@ -1,26 +1,109 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-sarabun), ui-sans-serif, system-ui, sans-serif;
+
+  --color-navy-950: #050d22;
+  --color-navy-900: #0a1a3c;
+  --color-navy-800: #12285a;
+  --color-navy-700: #1c3a7a;
+  --color-mint-300: #8ff0c8;
+  --color-mint-400: #4fe0a8;
+  --color-mint-500: #22c98a;
+  --color-mint-600: #12a46f;
+  --color-canvas: #f4f6fa;
+  --color-ink: #0f1b33;
+  --color-muted: #5b6782;
+  --color-line: #e3e8f0;
+
+  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-grow: grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/* ---------- Decorative credit-card stack (pure CSS) ---------- */
+.card-stack {
+  position: relative;
+  width: min(340px, 78vw);
+  aspect-ratio: 1.586;
+  perspective: 1200px;
+}
+
+.card-stack .cc {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 7%;
+  color: #fff;
+  box-shadow: 0 24px 48px -16px rgb(5 13 34 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  animation: cc-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.card-stack .cc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.16) 45%, transparent 60%);
+  transform: translateX(-100%);
+  animation: cc-shine 6s ease-in-out infinite;
+}
+
+.card-stack .cc:nth-child(1) {
+  background: linear-gradient(135deg, #1c3a7a, #0a1a3c);
+  --r: -14deg; --x: -34px; --y: 30px;
+  animation-delay: -4s;
+}
+.card-stack .cc:nth-child(2) {
+  background: linear-gradient(135deg, #22c98a, #0e7f5a);
+  --r: -5deg; --x: -12px; --y: 12px;
+  animation-delay: -2s;
+}
+.card-stack .cc:nth-child(3) {
+  background: linear-gradient(135deg, #12285a 0%, #050d22 70%), #050d22;
+  --r: 5deg; --x: 14px; --y: -8px;
+  animation-delay: 0s;
+}
+
+@keyframes cc-float {
+  0%, 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+  50% { transform: translate(var(--x), calc(var(--y) - 12px)) rotate(calc(var(--r) + 2deg)); }
+}
+
+@keyframes cc-shine {
+  0%, 55% { transform: translateX(-100%); }
+  80%, 100% { transform: translateX(100%); }
+}
+
+.cc-chip {
+  width: 42px;
+  height: 32px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #f4e3a1, #c9a94b);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .card-stack .cc { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
 }
